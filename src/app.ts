@@ -3,8 +3,9 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
-import * as middlewares from "./middleware/index.middleware";
 import api from "./api/index.api";
+import { notFound } from "./middleware/notFound.middleware";
+import { errorHandler } from "./middleware/errorHandler.middleware";
 
 config();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 
 app.use("/api/", api);
 
-app.use(middlewares.notFound);
-app.use(middlewares.errorHandler);
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
