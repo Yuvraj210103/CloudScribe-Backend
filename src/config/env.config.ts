@@ -10,6 +10,10 @@ export const validateEnv = () => {
       port: envVars.PORT,
       env: envVars.NODE_ENV,
       MONGO_DB_URI: envVars.MONGO_DB_URI,
+      jwtConfig: {
+        accessSecret: envVars.JWT,
+        refreshaccessSecret: envVars.JWT_REFRESH,
+      },
     };
   } catch (error) {
     let message = undefined;
