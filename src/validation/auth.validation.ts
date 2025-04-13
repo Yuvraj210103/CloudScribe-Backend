@@ -19,3 +19,14 @@ export const registerUserSchema = object({
   }),
 });
 export type registerUserInput = TypeOf<typeof registerUserSchema>["body"];
+
+export const activateUserSchema = object({
+  body: object({
+    email: string({ required_error: "Should have email" }).email({
+      message: "Invalid email address",
+    }),
+    OTPCode: string({ required_error: "OTP should be provided" }),
+  }),
+});
+
+export type activateUserInput = TypeOf<typeof activateUserSchema>["body"];

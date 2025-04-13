@@ -25,6 +25,10 @@ const userSchema = new Schema<IUser>(
       minlength: [6, "Password must be at least 6 characters long"],
       select: false, // Do not include password in queries by default
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
     OTPCode: {
       type: String,
       select: false,
