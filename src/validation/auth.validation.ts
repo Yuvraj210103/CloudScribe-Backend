@@ -40,3 +40,17 @@ export const forgotPasswordSchema = object({
 });
 
 export type forgotPasswordInput = TypeOf<typeof forgotPasswordSchema>["body"];
+
+export const resetPasswordSchema = object({
+  body: object({
+    email: string({ required_error: "Should have email" }).email({
+      message: "Invalid email address",
+    }),
+    passwordResetCode: string({ required_error: "OTP should be provided" }),
+    password: string({ required_error: "Should have password" }).min(6, {
+      message: "Password should have at least 6 characters",
+    }),
+  }),
+});
+
+export type resetPasswordInput = TypeOf<typeof resetPasswordSchema>["body"];
