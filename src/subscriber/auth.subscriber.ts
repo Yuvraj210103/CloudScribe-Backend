@@ -13,4 +13,14 @@ export const signUpSubscriber = async (data) => {
   });
 };
 
-EventEmitterInstance.on("signup", signUpSubscriber);
+export const forgetPasswordSubscriber = async (data) => {
+  await sendMail({
+    email: data?.email,
+    subject: "Password reset code",
+    template: "passwordReset.mails.ejs",
+    data: {
+      user: data.name,
+      code: data.code,
+    },
+  });
+};

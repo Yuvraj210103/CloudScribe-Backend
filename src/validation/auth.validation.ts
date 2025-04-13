@@ -30,3 +30,13 @@ export const activateUserSchema = object({
 });
 
 export type activateUserInput = TypeOf<typeof activateUserSchema>["body"];
+
+export const forgotPasswordSchema = object({
+  body: object({
+    email: string({ required_error: "Should have email" }).email({
+      message: "Invalid email address",
+    }),
+  }),
+});
+
+export type forgotPasswordInput = TypeOf<typeof forgotPasswordSchema>["body"];
