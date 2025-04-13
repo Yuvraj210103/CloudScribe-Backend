@@ -3,14 +3,9 @@ import { IUser } from "../interfaces/user.interface";
 
 const userSchema = new Schema<IUser>(
   {
-    firstName: {
+    fullName: {
       type: String,
       required: [true, "First name is required"],
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      required: [true, "Last name is required"],
       trim: true,
     },
     email: {
@@ -29,6 +24,18 @@ const userSchema = new Schema<IUser>(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
       select: false, // Do not include password in queries by default
+    },
+    OTPCode: {
+      type: String,
+      select: false,
+    },
+    OTPCodeExpires: {
+      type: Number,
+      select: false,
+    },
+    passwordResetCode: {
+      type: String,
+      select: true,
     },
   },
   { timestamps: true }
