@@ -1,23 +1,21 @@
-import { NextFunction, Request, Response } from "express";
-import {
-  registerUserInput,
-  registerUserSchema,
-} from "../../validation/auth.validation";
+import { Request, Response } from "express";
+import { registerUserSchema } from "../../validation/auth.validation";
 import { createUser, findUserByEmail } from "../../services/user.services";
 import BadRequestError from "../../error/badRequest.error";
 import { ErrorCode } from "../../error/custom.error";
 import bcrypt from "bcryptjs";
 import { generateRandom6DigitString } from "../../utils/util";
-import { sendMail } from "../../utils/sendMail";
-import validateSchema from "../../middleware/validateSchema.middleware";
+import { EventEmitterInstance } from "../../config/event-emitter";
 
-export const registerUser = async (
-  req: Request<object, object, registerUserInput>,
-  res: Response
-) => {
+export const registerUser = async (req: Request, res: Response) => {
   try {
-    validateSchema(registerUserSchema);
-    const { email, password } = req.body;
+    const result = await registerUserSchema.safeParseAsync(req.body);
+
+    if (!result.success) {
+      throw new Error((result.error as unknown as string) || "Invalid");
+    }
+
+    const { email, password, fullName } = result.data.body;
 
     const userExist = await findUserByEmail(email);
     if (userExist) {
@@ -35,23 +33,16 @@ export const registerUser = async (
       parseInt(process.env.VERIFICATION_CODE_EXP ?? "30", 10) * 1000 * 60;
 
     await createUser({
-      ...req.body,
+      fullName,
+      email,
       password: hashedPassword,
       OTPCode: code,
       OTPCodeExpires: Date.now() + verificationExpires,
     });
 
-    await sendMail({
-      email: email,
-      subject: "Email verification",
-      template: "emailVerification.mails.ejs",
-      data: {
-        user: req.body.fullName,
-        code,
-      },
-    });
+    EventEmitterInstance.emit("signup", { code, fullName, email });
 
-    //res.status(201).json({ success: true, message: "Verification email sent" });
+    res.status(201).json({ success: true, message: "Verification email sent" });
   } catch (error) {
     console.log(error);
     throw error;

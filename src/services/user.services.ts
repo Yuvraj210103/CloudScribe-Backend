@@ -18,6 +18,6 @@ export async function createUser(userData: Partial<IUser>) {
     const result = await UserModel.create(userData);
     return { data: result, success: true };
   } catch (error) {
-    return { data: null, success: false, error };
+    throw error;
   }
 }

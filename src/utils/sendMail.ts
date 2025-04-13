@@ -12,8 +12,6 @@ export const sendMail = async (options: MailOptions): Promise<void> => {
   try {
     const transporter = nodemailer.createTransport({
       host: validateEnv().smtp.host,
-      port: validateEnv().smtp.port,
-      service: validateEnv().smtp.service,
       secure: true,
       auth: {
         user: validateEnv().smtp.mail,
