@@ -1,7 +1,7 @@
 import app from "./src/app";
-import { connectToDb } from "./src/config/mongoose";
+import { bootstrap } from "./src/loader";
 
-connectToDb();
+bootstrap();
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => {

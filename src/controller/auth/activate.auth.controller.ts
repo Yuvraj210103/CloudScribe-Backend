@@ -3,6 +3,8 @@ import BadRequestError from "../../error/badRequest.error";
 import { ErrorCode } from "../../error/custom.error";
 import { findUser } from "../../services/user.services";
 import { activateUserSchema } from "../../validation/auth.validation";
+import { generateRandom6DigitString } from "../../utils/util";
+import { EventEmitterInstance } from "../../config/event-emitter";
 
 export const activateUser = async (req: Request, res: Response) => {
   try {
@@ -30,11 +32,27 @@ export const activateUser = async (req: Request, res: Response) => {
       );
     }
     // Validate OTP code
-    if (user.OTPCode !== OTPCode || user.OTPCodeExpires < Date.now()) {
-      throw new BadRequestError(
-        "Invalid or expired OTP code",
-        ErrorCode.BAD_REQUEST
-      );
+    if (user.OTPCode !== OTPCode) {
+      throw new BadRequestError("Invalid OTP code", ErrorCode.BAD_REQUEST);
+    }
+
+    if (user.OTPCodeExpires < Date.now()) {
+      const code = generateRandom6DigitString();
+      const verificationExpires =
+        parseInt(process.env.VERIFICATION_CODE_EXP ?? "30", 10) * 1000 * 60;
+      user.OTPCode = code;
+      user.OTPCodeExpires = Date.now() + verificationExpires;
+
+      await user.save();
+
+      EventEmitterInstance.emit("signup", { code, user: user.fullName, email });
+
+      res.status(500).json({
+        message: "OTP expired, please enter the new otp which sent now",
+        success: false,
+      });
+
+      return;
     }
 
     user.OTPCode = "";
