@@ -1,4 +1,4 @@
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 export interface INote extends Document {
   title: string;
@@ -7,5 +7,5 @@ export interface INote extends Document {
   tag?: string;
   createdAt: Date;
   updatedAt: Date;
-  userId: Schema.Types.ObjectId;
+  userId: Types.ObjectId;
 }

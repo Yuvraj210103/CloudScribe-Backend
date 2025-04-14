@@ -15,7 +15,7 @@ export async function createNote(noteData: Partial<INote>) {
     const result = await NoteModel.create(noteData);
     return { data: result, success: true };
   } catch (error) {
-    return { data: null, success: false, error };
+    throw error;
   }
 }
 
