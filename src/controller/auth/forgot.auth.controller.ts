@@ -39,7 +39,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     EventEmitterInstance.emit("forgot", {
       code,
-      name: user.fullName,
+      user: user.fullName,
       email: user.email,
     });
 

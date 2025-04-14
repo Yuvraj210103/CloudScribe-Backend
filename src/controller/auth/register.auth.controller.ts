@@ -40,7 +40,7 @@ export const registerUser = async (req: Request, res: Response) => {
       OTPCodeExpires: Date.now() + verificationExpires,
     });
 
-    EventEmitterInstance.emit("signup", { code, fullName, email });
+    EventEmitterInstance.emit("signup", { code, user: fullName, email });
 
     res.status(201).json({ success: true, message: "Verification email sent" });
   } catch (error) {

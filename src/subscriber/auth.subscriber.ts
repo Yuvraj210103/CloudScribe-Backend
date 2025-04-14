@@ -7,7 +7,7 @@ export const signUpSubscriber = async (data) => {
     subject: "Email verification",
     template: "emailverification.mails.ejs",
     data: {
-      user: data.name,
+      user: data.user,
       code: data?.code,
     },
   });
@@ -19,7 +19,7 @@ export const forgetPasswordSubscriber = async (data) => {
     subject: "Password reset code",
     template: "passwordReset.mails.ejs",
     data: {
-      user: data.name,
+      user: data.user,
       code: data.code,
     },
   });
