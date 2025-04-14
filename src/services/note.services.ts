@@ -32,6 +32,6 @@ export async function updateNoteById(
     const result = await NoteModel.findByIdAndUpdate(id, update, options);
     return { data: result, success: true };
   } catch (error) {
-    return { data: null, success: false, error };
+    throw error;
   }
 }

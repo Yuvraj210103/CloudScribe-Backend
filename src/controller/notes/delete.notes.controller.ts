@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { findNoteById } from "../../services/note.services";
+import { deleteNoteById } from "../../services/note.services";
 import BadRequestError from "../../error/badRequest.error";
 import { ErrorCode } from "../../error/custom.error";
 
-export const fetchSingleNote = async (req: Request, res: Response) => {
+export const deleteNote = async (req: Request, res: Response) => {
   try {
     const noteId = req.params.id;
 
@@ -14,9 +14,11 @@ export const fetchSingleNote = async (req: Request, res: Response) => {
       );
     }
 
-    const data = await findNoteById(noteId);
+    const data = await deleteNoteById(noteId);
 
-    res.status(201).json({ success: true, data });
+    res
+      .status(201)
+      .json({ success: true, message: "Note deleted successfully", data });
   } catch (error) {
     console.log(error);
     throw error;

@@ -1,12 +1,19 @@
 import { Request, Response } from "express";
-import { UserDataType } from "../../middleware/authJWT.middleware";
 import { createNoteSchema } from "../../validation/note.validation";
-import { createNote } from "../../services/note.services";
-import mongoose from "mongoose";
+import { updateNoteById } from "../../services/note.services";
+import BadRequestError from "../../error/badRequest.error";
+import { ErrorCode } from "../../error/custom.error";
 
-export const createNotes = async (req: Request, res: Response) => {
+export const updateNotes = async (req: Request, res: Response) => {
   try {
-    const user: UserDataType = (req as any).userData;
+    const noteId = req.params.id;
+
+    if (!noteId) {
+      throw new BadRequestError(
+        "Please provide note id",
+        ErrorCode.BAD_REQUEST
+      );
+    }
 
     const result = await createNoteSchema.safeParseAsync(req.body);
 
@@ -16,17 +23,18 @@ export const createNotes = async (req: Request, res: Response) => {
 
     const { title, content, images, tag } = result.data.body;
 
-    const noteCreateRes = await createNote({
+    console.log(noteId, "noteId");
+
+    const noteCreateRes = await updateNoteById(noteId, {
       title,
       content,
       images,
       tag,
-      userId: new mongoose.Types.ObjectId(user.userId),
     });
 
     res.status(201).json({
       success: true,
-      message: "Note created successfully",
+      message: "Note updated successfully",
       data: noteCreateRes,
     });
   } catch (error) {
