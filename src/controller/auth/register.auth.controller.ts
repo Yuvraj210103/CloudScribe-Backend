@@ -17,20 +17,33 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const { email, password, fullName } = result.data.body;
 
+    const code = generateRandom6DigitString();
+    const verificationExpires =
+      parseInt(process.env.VERIFICATION_CODE_EXP ?? "30", 10) * 1000 * 60;
+
     const userExist = await findUserByEmail(email);
     if (userExist) {
-      throw new BadRequestError(
-        "User already exists with this email",
-        ErrorCode.ALREADY_EXST
-      );
+      if (userExist.isActive) {
+        throw new BadRequestError(
+          "User already exists with this email",
+          ErrorCode.ALREADY_EXST
+        );
+      } else {
+        userExist.OTPCode = code;
+        userExist.OTPCodeExpires = Date.now() + verificationExpires;
+
+        await userExist.save();
+        EventEmitterInstance.emit("signup", { code, user: fullName, email });
+
+        res
+          .status(201)
+          .json({ success: true, message: "Verification email sent" });
+        return;
+      }
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
-    const code = generateRandom6DigitString();
-    const verificationExpires =
-      parseInt(process.env.VERIFICATION_CODE_EXP ?? "30", 10) * 1000 * 60;
 
     await createUser({
       fullName,
